@@ -37,3 +37,11 @@ test('returns every matching hypothesis', () => {
   }, { text: true, fontFamily: 'Late Font', containerClass: 'swiper', image: { changedHeight: true, hasDimensions: false, hasAspectRatio: false } });
   assert.deepEqual(hypotheses.map(({ kind }) => kind), ['font', 'image', 'inserted', 'stylesheet', 'carousel']);
 });
+
+test('matches an insertion painted several frames later but not one from long before', () => {
+  const shift = { t: 2000, value: 0.1, sources: [] };
+  const near = buildHypotheses(shift, { insertions: [{ t: 1400, selector: '#banner', above: true }] });
+  const far = buildHypotheses(shift, { insertions: [{ t: 500, selector: '#banner', above: true }] });
+  assert.ok(near.some((h) => h.kind === 'inserted'));
+  assert.ok(!far.some((h) => h.kind === 'inserted'));
+});

@@ -1,7 +1,10 @@
 const WINDOW_MS = 100;
+// An inserted element can wait more than one frame before it is painted and moves the page (seen on slow CI
+// machines), so insertions get a wider window than font and stylesheet loads.
+const INSERT_WINDOW_MS = 1000;
 
-function recent(events, shift) {
-  return events.filter((event) => event.t <= shift.t && shift.t - event.t <= WINDOW_MS);
+function recent(events, shift, windowMs = WINDOW_MS) {
+  return events.filter((event) => event.t <= shift.t && shift.t - event.t <= windowMs);
 }
 
 function evidence(kind, text) {
@@ -16,7 +19,7 @@ export function buildHypotheses(shift, events, dom = {}) {
     const reservation = dom.image.hasDimensions || dom.image.hasAspectRatio ? 'space was reserved' : 'no width/height or aspect-ratio';
     hypotheses.push(evidence('image', `image height changed; ${reservation}`));
   }
-  const insertion = recent(events.insertions || [], shift).find((event) => event.above);
+  const insertion = recent(events.insertions || [], shift, INSERT_WINDOW_MS).reverse().find((event) => event.above);
   if (insertion) hypotheses.push(evidence('inserted', `${insertion.selector} was added above ${Math.round(shift.t - insertion.t)} ms before`));
   const stylesheet = recent(events.resources || [], shift).find((event) => event.kind === 'stylesheet');
   if (stylesheet) hypotheses.push(evidence('stylesheet', `${stylesheet.name} finished ${Math.round(shift.t - stylesheet.t)} ms before`));

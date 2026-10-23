@@ -55,8 +55,11 @@ export const injectedRecorder = String.raw`
       if (mutation.type === 'childList') for (const node of mutation.addedNodes) {
         if (node.nodeType === Node.ELEMENT_NODE) {
           observeImage(node);
-          const box = node.getBoundingClientRect();
-          state.insertions.push({ t: now(), selector: selector(node), above: box.y < innerHeight });
+          // Nodes the parser creates while the HTML is still loading are the page itself, not something a script added.
+          if (document.readyState !== 'loading') {
+            const box = node.getBoundingClientRect();
+            state.insertions.push({ t: now(), selector: selector(node), above: box.y < innerHeight });
+          }
         }
       }
       if (mutation.type === 'attributes') {
