@@ -2,6 +2,24 @@
   "name": "wp-speed-kit",
   "version": "0.1.0",
   "description": "Repeatable local Lighthouse lab reports with layout-shift evidence.",
+  "keywords": [
+    "wordpress",
+    "woocommerce",
+    "lighthouse",
+    "core-web-vitals",
+    "cls",
+    "performance",
+    "pagespeed",
+    "cli"
+  ],
+  "homepage": "https://github.com/MUHZERO/wp-speed-kit#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MUHZERO/wp-speed-kit.git"
+  },
+  "bugs": {
+    "url": "https://github.com/MUHZERO/wp-speed-kit/issues"
+  },
   "type": "module",
   "bin": {
     "wpsk": "bin/wpsk.js"
