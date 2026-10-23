@@ -1,0 +1,1 @@
+<!doctype html><title>late style</title><main><h1 id="heading">Late stylesheet</h1><p id="content">This content moves after stylesheet application.</p></main><script>setTimeout(() => { const link = document.createElement('link'); link.rel = 'stylesheet'; link.href = '/late.css?delay=100'; document.head.append(link); }, 300);</script>
