@@ -18,6 +18,8 @@ npx wp-speed-kit audit <url>
 
 `<url>` must use `http:` or `https:`.
 
+**[Usage guide](https://github.com/MUHZERO/wp-speed-kit/blob/main/docs/usage.md)**: first audit, before/after comparison, finding layout-shift causes, CI budgets, JSON output, client reports and troubleshooting.
+
 ## Requirements
 
 - Node.js 22 or later.
@@ -32,7 +34,7 @@ wpsk audit <url...> [--runs 5] [--device mobile|desktop|both] [--warm 2]
                  [--fail-on "lcp>2500,cls>0.1,perf<90"] [--timeout 120]
                  [--chrome-path /path/to/browser] [--chrome-flags=--no-sandbox]
 
-wpsk cls <url> [--device mobile|desktop] [--shots] [--json]
+wpsk cls <url> [--device mobile|desktop] [--shots] [--out ./wpsk-cls] [--json]
            [--chrome-path /path/to/browser] [--chrome-flags=--no-sandbox]
 
 wpsk compare <before.json> <after.json> [--out ./compare] [--png]
@@ -41,7 +43,7 @@ wpsk compare <before.json> <after.json> [--out ./compare] [--png]
 
 `audit` defaults to 5 runs, the mobile device profile, 2 warm-up requests, a 120-second timeout per run, and `./wpsk-report` for output. `cls` defaults to the mobile profile. `compare` defaults to `./compare`.
 
-`audit` accepts one or more URLs. It writes `report.html`, `report.json`, and representative Lighthouse JSON files when at least one run succeeds. `--json` writes command data to standard output; progress goes to standard error. `--cta` adds a footer line to the HTML report.
+`audit` accepts one or more URLs. It writes `report.html`, `report.json`, and representative Lighthouse JSON files when at least one run succeeds. `--json` writes command data to standard output; progress goes to standard error. `--cta "text|url"` adds a footer line to the HTML report, linked when an `https://` URL follows the bar. With `--device both`, `--runs` counts per device.
 
 `--fail-on` is a comma-separated list of budget rules such as `lcp>2500`, `cls>0.1`, or `perf<90`. Supported metrics are `lcp`, `fcp`, `tbt`, `cls`, `si`, `perf`, `a11y`, `bp`, and `seo`.
 

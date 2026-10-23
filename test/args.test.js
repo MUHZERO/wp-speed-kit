@@ -54,3 +54,8 @@ test('passes --chrome-flags through for every command that starts Chrome', () =>
   assert.deepEqual(parseCli(['cls', 'https://a.test', '--chrome-flags=--no-sandbox']).options.flags, ['--no-sandbox']);
   assert.deepEqual(parseCli(['compare', 'a.json', 'b.json', '--png', '--chrome-flags=--no-sandbox']).options.chromeFlags, ['--no-sandbox']);
 });
+
+test('parses the cls screenshot output directory', () => {
+  assert.equal(parseCli(['cls', 'https://a.test']).options.out, './wpsk-cls');
+  assert.equal(parseCli(['cls', 'https://a.test', '--out', 'screens']).options.out, 'screens');
+});

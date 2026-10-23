@@ -1,4 +1,4 @@
-import { band, escape, METRICS as metrics, metricValue, SCORES as scores, scoreValue } from './format.js';
+import { band, ctaHtml, escape, METRICS as metrics, metricValue, SCORES as scores, scoreValue } from './format.js';
 
 function range(summary, name = null) {
   if (!name) return `range ${scoreValue(summary.min)}–${scoreValue(summary.max)}`;
@@ -64,7 +64,7 @@ export function renderHtml(data) {
   const hints = Object.values(data.wordpressHints || {}).flat().map((hint) => `<li>${escape(hint.text)}</li>`).join('');
   const reportDate = new Date(data.provenance?.endedAt || data.provenance?.startedAt);
   const date = Number.isNaN(reportDate.valueOf()) ? '' : `${String(reportDate.getUTCDate()).padStart(2, '0')} ${['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][reportDate.getUTCMonth()]} ${reportDate.getUTCFullYear()}, ${String(reportDate.getUTCHours()).padStart(2, '0')}:${String(reportDate.getUTCMinutes()).padStart(2, '0')} UTC`;
-  const runLabel = `${data.runsRequested} ${data.runsRequested === 1 ? 'run' : 'runs'}`;
+  const runLabel = `${data.runsRequested} ${data.runsRequested === 1 ? 'run' : 'runs'}${(data.devices || []).length > 1 ? ' per device' : ''}`;
   return `<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>wp-speed-kit report</title><style>
     :root{color-scheme:light dark;--bg:#fafafa;--fg:#18202a;--card:#fff;--muted:#5e6875}@media(prefers-color-scheme:dark){:root{--bg:#111820;--fg:#eef3f7;--card:#1a2530;--muted:#b5c0cc}}*{box-sizing:border-box}body{background:var(--bg);color:var(--fg);font:16px system-ui,sans-serif;line-height:1.5;margin:auto;max-width:1000px;padding:20px}section{margin:28px 0}h1{margin-bottom:0}.muted,span{color:var(--muted);display:block}.cards{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(190px,1fr))}article{background:var(--card);border-radius:8px;padding:12px;margin:8px 0}a{color:inherit}pre{white-space:pre-wrap;overflow-wrap:anywhere}table{border-collapse:collapse;margin:8px 0}th,td{border:1px solid var(--muted);padding:4px 8px;text-align:left}</style>
   <header><h1>wp-speed-kit report</h1><p>local Lighthouse lab result</p><p><a href="${escape(data.finalUrl)}">${escape(data.finalUrl)}</a></p><p class="muted">${date} · ${escape((data.devices || []).join(', '))} · ${runLabel}</p><p class="muted">Warm-up requests can warm the server cache; every Lighthouse run uses a fresh browser profile.</p></header>
@@ -75,5 +75,5 @@ export function renderHtml(data) {
   <section><h2>Render-blocking files</h2>${renderBlocking(data)}</section>
   <section><h2>WordPress hints</h2>${hints ? `<ul>${hints}</ul>` : '<p>No WordPress-specific evidence found.</p>'}</section>
   <section><h2>Method and provenance</h2><p>Sequential local Lighthouse lab runs use per-metric medians and ranges. The report names the median of successful runs.</p><pre>${escape(JSON.stringify(data.provenance, null, 2))}</pre></section>
-  <footer>Made with <a href="https://github.com/muhdroid/wp-speed-kit">wp-speed-kit</a>${data.cta ? `<p>${escape(data.cta)}</p>` : ''}</footer></html>`;
+  <footer>Made with <a href="https://github.com/MUHZERO/wp-speed-kit">wp-speed-kit</a>${ctaHtml(data.cta)}</footer></html>`;
 }

@@ -2,6 +2,7 @@ export const injectedRecorder = String.raw`
 (() => {
   const state = { shifts: [], fonts: [], insertions: [], resources: [], classChanges: [], heightChanges: [] };
   const now = () => performance.now();
+  const notify = (event) => window.wpskLayoutShift?.(JSON.stringify(event));
   const rect = (box) => ({ x: box.x, y: box.y, w: box.width, h: box.height });
   const selector = (node) => {
     if (!node || node.nodeType !== Node.ELEMENT_NODE) return '(not attributable)';
@@ -45,15 +46,23 @@ export const injectedRecorder = String.raw`
     };
   };
   new PerformanceObserver((list) => {
-    for (const entry of list.getEntries()) state.shifts.push({
-      t: entry.startTime, value: entry.value, hadRecentInput: entry.hadRecentInput,
-      sources: entry.sources.map((source) => ({ selector: selector(source.node), before: rect(source.previousRect), after: rect(source.currentRect), dom: details(source.node) })),
-    });
+    for (const entry of list.getEntries()) {
+      const shift = {
+        t: entry.startTime, value: entry.value, hadRecentInput: entry.hadRecentInput,
+        sources: entry.sources.map((source) => ({ selector: selector(source.node), before: rect(source.previousRect), after: rect(source.currentRect), dom: details(source.node) })),
+      };
+      state.shifts.push(shift);
+      if (shift.value > 0.01) notify({ type: 'shift', sources: shift.sources });
+    }
   }).observe({ type: 'layout-shift', buffered: true });
+  new PerformanceObserver((list) => {
+    if (list.getEntries().some((entry) => entry.name === 'first-paint')) notify({ type: 'first-paint' });
+  }).observe({ type: 'paint', buffered: true });
   const observer = new MutationObserver((mutations) => {
     for (const mutation of mutations) {
       if (mutation.type === 'childList') for (const node of mutation.addedNodes) {
         if (node.nodeType === Node.ELEMENT_NODE) {
+          if (node.matches('[data-wpsk-overlay]') || node.closest('[data-wpsk-overlay]')) continue;
           observeImage(node);
           // Nodes the parser creates while the HTML is still loading are the page itself, not something a script added.
           if (document.readyState !== 'loading') {
@@ -64,6 +73,7 @@ export const injectedRecorder = String.raw`
       }
       if (mutation.type === 'attributes') {
         const node = mutation.target;
+        if (node.matches('[data-wpsk-overlay]') || node.closest('[data-wpsk-overlay]')) continue;
         const box = node.getBoundingClientRect();
         state.classChanges.push({ t: now(), selector: selector(node) });
         if (box.y < innerHeight && (getComputedStyle(node).position === 'fixed' || box.y <= 0)) state.heightChanges.push({ t: now(), selector: selector(node), above: true });

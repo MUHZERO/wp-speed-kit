@@ -8,6 +8,8 @@ import { buildReportData, provenance, writeReport } from '../report/json.js';
 
 const retryable = (error = '') => /timed? out|timeout|chrome|cdp|target|connection/i.test(error);
 const detectedChromePath = () => { try { return getChromePath(); } catch { return null; } };
+// --runs is per device; with both devices the runs alternate (m, d, m, d…) so a slow minute hits both.
+export const planRuns = (devices, runs) => Array.from({ length: runs * devices.length }, (_, index) => ({ device: devices[index % devices.length], n: Math.floor(index / devices.length) + 1 }));
 const devicesFor = (device) => device === 'both' ? ['mobile', 'desktop'] : [device];
 
 async function oneRun(url, device, options, id) {
@@ -33,13 +35,12 @@ async function auditUrl(url, parsed, dir) {
   }
 
   const runs = [];
-  for (let index = 0; index < options.runs; index += 1) {
-    const device = devices[index % devices.length];
-    process.stderr.write(`Measuring ${url} (${device}, run ${index + 1}/${options.runs})\n`);
-    const run = await oneRun(finalUrl, device, options, `${device}-${index + 1}`);
+  for (const { device, n } of planRuns(devices, options.runs)) {
+    process.stderr.write(`Measuring ${url} (${device}, run ${n}/${options.runs})\n`);
+    const run = await oneRun(finalUrl, device, options, `${device}-${n}`);
     runs.push(run);
     if (run.lhr?.finalDisplayedUrl) finalUrl = run.lhr.finalDisplayedUrl;
-    if (!run.ok) process.stderr.write(`Run ${index + 1} failed: ${run.error}\n`);
+    if (!run.ok) process.stderr.write(`Run ${n} (${device}) failed: ${run.error}\n`);
   }
 
   const aggregates = Object.fromEntries(devices.map((device) => [device, aggregateRuns(runs.filter((run) => run.device === device))]));
@@ -53,7 +54,7 @@ async function auditUrl(url, parsed, dir) {
     }
   }
   const broken = Object.values(aggregates).flatMap((aggregate) => checkBudgets(aggregate, options.failOn || []));
-  const code = exitCodeFor({ requested: options.runs, succeeded: runs.filter((run) => run.ok).length, broken });
+  const code = exitCodeFor({ requested: options.runs * devices.length, succeeded: runs.filter((run) => run.ok).length, broken });
   const chromeUserAgent = runs.find((run) => run.lhr)?.lhr?.userAgent || '';
   const chromeVersion = /Chrome\/([^ ]+)/.exec(chromeUserAgent)?.[1] || null;
   const data = buildReportData({

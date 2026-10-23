@@ -5,7 +5,7 @@ const HELP = `Usage:
   wpsk audit <url...> [--runs 5] [--device mobile|desktop|both] [--warm 2]
                          [--out ./wpsk-report] [--cta "text|url"] [--json]
                          [--fail-on "lcp>2500,cls>0.1,perf<90"] [--timeout 120]
-  wpsk cls <url> [--device mobile|desktop] [--shots] [--json]
+  wpsk cls <url> [--device mobile|desktop] [--shots] [--out ./wpsk-cls] [--json]
   wpsk compare <before.json> <after.json> [--out ./compare] [--png]
 `;
 

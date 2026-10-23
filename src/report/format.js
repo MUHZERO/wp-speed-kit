@@ -28,3 +28,11 @@ export function band(name, value) {
   const [good, poor] = thresholds[name];
   return value <= good ? 'good' : value <= poor ? 'needs improvement' : 'poor';
 }
+
+// --cta "text|url": the text, linked when an http(s) URL follows the bar.
+export function ctaHtml(cta) {
+  if (!cta) return '';
+  const [text, url] = String(cta).split('|').map((part) => part.trim());
+  const link = /^https?:\/\//.test(url || '') ? url : null;
+  return `<p>${link ? `<a href="${escape(link)}">${escape(text)}</a>` : escape(text)}</p>`;
+}

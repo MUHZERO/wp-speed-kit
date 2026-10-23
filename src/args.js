@@ -91,6 +91,7 @@ function cls(args) {
   const { values, positionals } = parseOptions(args, {
     device: { type: 'string', default: 'mobile' },
     shots: { type: 'boolean', default: false },
+    out: { type: 'string', default: './wpsk-cls' },
     json: { type: 'boolean', default: false },
     'chrome-path': { type: 'string' },
     'chrome-flags': { type: 'string', multiple: true, default: [] },
@@ -107,6 +108,7 @@ function cls(args) {
     options: {
       device: values.device,
       shots: values.shots,
+      out: values.out,
       json: values.json,
       chromePath: values['chrome-path'] ?? null,
       flags: values['chrome-flags'],

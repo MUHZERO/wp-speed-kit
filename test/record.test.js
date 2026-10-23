@@ -2,6 +2,9 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { fileURLToPath } from 'node:url';
 import { existsSync } from 'node:fs';
+import { mkdtemp, readFile, readdir, rm } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import { getChromePath } from 'chrome-launcher';
 
 import { launchChrome } from '../src/chrome.js';
@@ -42,5 +45,23 @@ test('records synthetic layout shifts and their evidence', async (t) => {
     assert.equal(clean.cls, 0);
   } finally {
     await server.close();
+  }
+});
+
+test('captures first paint, shifts, and final state without recording its overlays', async (t) => {
+  if (!await requireChrome(t)) return;
+  const server = await startFixtureServer(fixtures);
+  const outDir = await mkdtemp(join(tmpdir(), 'wpsk-shots-'));
+  try {
+    const recording = await recordShifts(`${server.url}/large-shift.html`, { device: 'desktop', shots: true, outDir });
+    const files = await readdir(outDir);
+    assert.ok(files.length >= 3);
+    assert.ok(files.includes('first-paint.png'));
+    assert.ok(files.includes('shift-1.png'));
+    assert.ok(files.includes('final.png'));
+    assert.notDeepEqual(await readFile(join(outDir, 'first-paint.png')), await readFile(join(outDir, 'shift-1.png')));
+    assert.ok(!recording.events.insertions.some((entry) => entry.selector.includes('wpsk-overlay')));
+  } finally {
+    await Promise.all([server.close(), rm(outDir, { recursive: true, force: true })]);
   }
 });
