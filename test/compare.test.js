@@ -41,3 +41,11 @@ test('rejects unsupported report schemas', async (t) => {
   } finally { process.stderr.write = write; }
   assert.match(lines.join(''), /unsupported schemaVersion/);
 });
+
+test('formats metric values and differences in their own units', () => {
+  const html = renderCompare(report(55, 4517.171825369913), report(93, 2039.5010000000002));
+  assert.match(html, /4\.5 s/);
+  assert.match(html, /2\.0 s/);
+  assert.match(html, /100 ms/);
+  assert.doesNotMatch(html, /\d\.\d{4,}/);
+});

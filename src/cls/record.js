@@ -14,8 +14,8 @@ async function evaluate(cdp, expression) {
   return result.result.value;
 }
 
-export async function recordShifts(url, { device = 'mobile', chromePath, shots = false, outDir } = {}) {
-  const chrome = await launchChrome({ chromePath });
+export async function recordShifts(url, { device = 'mobile', chromePath, flags = [], shots = false, outDir } = {}) {
+  const chrome = await launchChrome({ chromePath, flags });
   let cdp;
   try {
     cdp = await connectPage(chrome.port);

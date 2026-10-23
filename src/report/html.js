@@ -1,25 +1,10 @@
-const escape = (value) => String(value ?? '').replace(/[&<>"']/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[character]);
-const metrics = [['fcp', 'FCP'], ['lcp', 'LCP'], ['tbt', 'TBT'], ['cls', 'CLS'], ['si', 'Speed Index']];
-const scores = [['perf', 'Performance'], ['a11y', 'Accessibility'], ['bp', 'Best Practices'], ['seo', 'SEO']];
+import { band, escape, METRICS as metrics, metricValue, SCORES as scores, scoreValue } from './format.js';
 
-function scoreValue(value) { return Math.round(value); }
-function metricValue(name, value) {
-  if (name === 'cls') return value.toFixed(3);
-  if (name === 'tbt') return `${Math.round(value)} ms`;
-  return `${(value / 1000).toFixed(1)} s`;
-}
 function range(summary, name = null) {
   if (!name) return `range ${scoreValue(summary.min)}–${scoreValue(summary.max)}`;
   if (name === 'cls') return `range ${summary.min.toFixed(3)}–${summary.max.toFixed(3)}`;
   if (name === 'tbt') return `range ${Math.round(summary.min)}–${Math.round(summary.max)} ms`;
   return `range ${(summary.min / 1000).toFixed(1)}–${(summary.max / 1000).toFixed(1)} s`;
-}
-function band(name, value) {
-  const thresholds = {
-    fcp: [1800, 3000], lcp: [2500, 4000], tbt: [200, 600], cls: [0.1, 0.25], si: [3400, 5800],
-  };
-  const [good, poor] = thresholds[name];
-  return value <= good ? 'good' : value <= poor ? 'needs improvement' : 'poor';
 }
 function representativeRuns(data) {
   return Object.entries(data.representatives || {}).map(([device, id]) => [device, data.runs.find((run) => run.id === id)]).filter(([, run]) => run?.lhr);

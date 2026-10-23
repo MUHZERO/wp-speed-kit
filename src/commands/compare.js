@@ -13,8 +13,8 @@ async function readReport(file) {
   return report;
 }
 
-async function renderPng(htmlPath) {
-  const chrome = await launchChrome();
+async function renderPng(htmlPath, { chromePath, chromeFlags = [] } = {}) {
+  const chrome = await launchChrome({ chromePath, flags: chromeFlags });
   let cdp;
   try {
     cdp = await connectPage(chrome.port);
@@ -37,7 +37,7 @@ export default async function run(parsed) {
     const out = await uniqueDir(parsed.options.out);
     const htmlPath = `${out}/compare.html`;
     await writeFile(htmlPath, renderCompare(before, after));
-    if (parsed.options.png) await renderPng(htmlPath);
+    if (parsed.options.png) await renderPng(htmlPath, parsed.options);
     process.stderr.write(`Comparison written to ${out}\n`);
     return 0;
   } catch (error) {

@@ -11,9 +11,9 @@ const detectedChromePath = () => { try { return getChromePath(); } catch { retur
 const devicesFor = (device) => device === 'both' ? ['mobile', 'desktop'] : [device];
 
 async function oneRun(url, device, options, id) {
-  let result = await runLighthouse(url, device, options);
+  let result = await runLighthouse(url, device, { ...options, flags: options.chromeFlags });
   if (!result.ok && retryable(result.error)) {
-    result = await runLighthouse(url, device, options);
+    result = await runLighthouse(url, device, { ...options, flags: options.chromeFlags });
     result.retried = true;
   }
   return { ...result, id };
@@ -47,7 +47,7 @@ async function auditUrl(url, parsed, dir) {
   for (const device of devices) {
     if (!runs.some((run) => run.device === device && run.ok)) continue;
     try {
-      recordings[device] = await recordShifts(finalUrl, { device, chromePath: options.chromePath });
+      recordings[device] = await recordShifts(finalUrl, { device, chromePath: options.chromePath, flags: options.chromeFlags });
     } catch (error) {
       process.stderr.write(`Layout-shift recording failed for ${device}: ${error.message}\n`);
     }

@@ -48,3 +48,9 @@ test('parses fail-on rules', () => {
 test('rejects invalid fail-on rules', () => {
   assert.throws(() => parseFailOn('lcp=1'), UsageError);
 });
+
+test('passes --chrome-flags through for every command that starts Chrome', () => {
+  assert.deepEqual(parseCli(['audit', 'https://a.test', '--chrome-flags=--no-sandbox']).options.chromeFlags, ['--no-sandbox']);
+  assert.deepEqual(parseCli(['cls', 'https://a.test', '--chrome-flags=--no-sandbox']).options.flags, ['--no-sandbox']);
+  assert.deepEqual(parseCli(['compare', 'a.json', 'b.json', '--png', '--chrome-flags=--no-sandbox']).options.chromeFlags, ['--no-sandbox']);
+});

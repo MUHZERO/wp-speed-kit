@@ -93,6 +93,7 @@ function cls(args) {
     shots: { type: 'boolean', default: false },
     json: { type: 'boolean', default: false },
     'chrome-path': { type: 'string' },
+    'chrome-flags': { type: 'string', multiple: true, default: [] },
   });
   assertPositionals(positionals, 1, 'cls', 'URL');
   if (!['mobile', 'desktop'].includes(values.device)) {
@@ -108,6 +109,7 @@ function cls(args) {
       shots: values.shots,
       json: values.json,
       chromePath: values['chrome-path'] ?? null,
+      flags: values['chrome-flags'],
     },
   };
 }
@@ -116,6 +118,8 @@ function compare(args) {
   const { values, positionals } = parseOptions(args, {
     out: { type: 'string', default: './compare' },
     png: { type: 'boolean', default: false },
+    'chrome-path': { type: 'string' },
+    'chrome-flags': { type: 'string', multiple: true, default: [] },
   });
   assertPositionals(positionals, 2, 'compare', 'report files');
 
@@ -123,7 +127,7 @@ function compare(args) {
     command: 'compare',
     urls: [],
     files: positionals,
-    options: { out: values.out, png: values.png },
+    options: { out: values.out, png: values.png, chromePath: values['chrome-path'] ?? null, chromeFlags: values['chrome-flags'] },
   };
 }
 
