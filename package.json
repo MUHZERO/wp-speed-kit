@@ -1,0 +1,27 @@
+{
+  "name": "wp-speed-kit",
+  "version": "0.1.0",
+  "description": "Repeatable local Lighthouse lab reports with layout-shift evidence.",
+  "type": "module",
+  "bin": {
+    "wpsk": "bin/wpsk.js"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "test": "node --test"
+  },
+  "dependencies": {
+    "chrome-launcher": "1.2.2",
+    "lighthouse": "13.5.0"
+  },
+  "files": [
+    "bin",
+    "src",
+    "README.md",
+    "LICENSE"
+  ],
+  "license": "MIT",
+  "author": "muhdroid (https://muhdroid.com)"
+}
