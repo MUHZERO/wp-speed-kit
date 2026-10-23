@@ -1,6 +1,7 @@
-const WINDOW_MS = 100;
-// An inserted element can wait more than one frame before it is painted and moves the page (seen on slow CI
-// machines), so insertions get a wider window than font and stylesheet loads.
+// How long before a shift an event still counts as correlated. The page is painted some frames after a font,
+// stylesheet or image arrives, and on slow machines (CI runners) that took more than 100 ms. An element added by a
+// script can wait longer still before it is painted.
+const WINDOW_MS = 500;
 const INSERT_WINDOW_MS = 1000;
 
 function recent(events, shift, windowMs = WINDOW_MS) {

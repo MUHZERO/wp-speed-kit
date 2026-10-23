@@ -71,10 +71,10 @@ wpsk compare <before.json> <after.json> [--out ./compare] [--png]
 
 | Hypothesis | Evidence shown |
 |---|---|
-| Web font swap | a font finished loading ≤ 100 ms before; the moved node's text uses that family |
+| Web font swap | a font finished loading ≤ 500 ms before; the moved node's text uses that family |
 | Image without reserved space | an `img` in the moved node's container changed height; whether it has `width`/`height` attributes or a CSS aspect-ratio |
 | Element added above | a MutationObserver insertion above the moved node ≤ 1 s before (it can wait several frames to be painted), after the HTML finished parsing, with its selector |
-| Stylesheet applied late | a stylesheet finished ≤ 100 ms before |
+| Stylesheet applied late | a stylesheet finished ≤ 500 ms before |
 | Carousel starting | the container has a known carousel class (Swiper, Slick, Splide, Owl, Flickity) and its class list changed at the shift |
 | Bar or banner changed height | a top/fixed element above the moved node changed height |
 

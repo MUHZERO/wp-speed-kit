@@ -11,7 +11,7 @@ test('matches a recent matching font load', () => {
 });
 
 test('does not match an old font load', () => {
-  assert.deepEqual(buildHypotheses(shift, { fonts: [{ t: 700, family: 'Late Font' }], insertions: [], resources: [] }, { text: true, fontFamily: 'Late Font' }), []);
+  assert.deepEqual(buildHypotheses(shift, { fonts: [{ t: 300, family: 'Late Font' }], insertions: [], resources: [] }, { text: true, fontFamily: 'Late Font' }), []);
 });
 
 test('matches a recent insertion above the moved node', () => {
