@@ -33,5 +33,6 @@ export async function startFixtureServer(dir) {
   });
   await new Promise((resolveListen) => server.listen(0, '127.0.0.1', resolveListen));
   const { port } = server.address();
-  return { url: `http://127.0.0.1:${port}`, close: () => new Promise((resolveClose, reject) => server.close((error) => error ? reject(error) : resolveClose())) };
+  return { url: `http://127.0.0.1:${port}`, // /hang never answers, so its sockets stay open; drop every connection or close() waits forever.
+    close: () => new Promise((resolveClose, reject) => { server.close((error) => error ? reject(error) : resolveClose()); server.closeAllConnections(); }) };
 }
