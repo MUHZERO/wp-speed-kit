@@ -1,6 +1,6 @@
 {
   "name": "wp-speed-kit",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Repeatable local Lighthouse lab reports with layout-shift evidence.",
   "keywords": [
     "wordpress",

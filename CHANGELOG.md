@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.1.1 - Unreleased
+## 0.1.1 - 2026-10-26
 
 - `cls --shots` now captures a screenshot at each shift, with the moved elements outlined.
 - Added `cls --out` (default `./wpsk-cls`).
