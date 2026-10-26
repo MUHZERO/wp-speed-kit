@@ -36,9 +36,14 @@ test('records synthetic layout shifts and their evidence', async (t) => {
       'inserted-banner.html': 'inserted',
       'late-style.html': 'stylesheet',
       'carousel.html': 'carousel',
+      // Paint is held back 600 ms by a stylesheet: the change must still come after the first paint.
+      'late-paint.html': 'inserted',
     })) {
       const recording = await recordShifts(`${server.url}/${file}`, { device: 'desktop' });
-      assert.ok(recording.shifts.some((shift) => shift.hypotheses.some((hypothesis) => hypothesis.kind === kind)), `${file} should have ${kind} evidence`);
+      assert.ok(
+        recording.shifts.some((shift) => shift.hypotheses.some((hypothesis) => hypothesis.kind === kind)),
+        `${file} should have ${kind} evidence; recorded: ${JSON.stringify({ shifts: recording.shifts, inputShifts: recording.inputShifts, events: recording.events })}`,
+      );
     }
     const clean = await recordShifts(`${server.url}/clean.html`, { device: 'desktop' });
     assert.equal(clean.shifts.length, 0);
